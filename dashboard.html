@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Wheelchair Dashboard</title>
+    <link rel="stylesheet" href="dashboard-styles.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <h2>Smart Wheelchair Dashboard</h2>
+
+        <!-- Display Recognized Voice Command -->
+        <p id="recognized-text">Listening for voice commands...</p>
+
+        <!-- Round Control Buttons -->
+        <div class="control-container">
+            <button id="forward-btn" class="round-btn">🔼</button>
+            <div class="side-buttons">
+                <button id="left-btn" class="round-btn">◀️</button>
+                <button id="stop-btn" class="round-btn">⏹️</button>
+                <button id="right-btn" class="round-btn">▶️</button>
+            </div>
+            <button id="backward-btn" class="round-btn">🔽</button>
+        </div>
+
+        <!-- Speed Control Slider -->
+        <div class="speed-control">
+            <label for="speed-slider">Speed:</label>
+            <input type="range" id="speed-slider" min="0" max="100" value="50">
+            <span id="speed-value">50%</span>
+        </div>
+
+        <!-- Start Voice Recognition -->
+        <button id="voice-btn">🎤 Start Voice Control</button>
+
+        <!-- Logout Button -->
+        <button id="logout-btn">Logout</button>
+    </div>
+
+    <script src="dashboard.js"></script>
+
+</body>
+</html>
