@@ -1,0 +1,104 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #f4f4f4;
+}
+
+header {
+    background: #007bff;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+}
+
+/* Introduction Section */
+.intro {
+    background: white;
+    padding: 40px;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Features Section */
+.features {
+    padding: 40px;
+}
+
+.features h2 {
+    margin-bottom: 20px;
+}
+
+.feature-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.feature {
+    background: white;
+    width: 250px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.feature img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.feature h3 {
+    margin-top: 10px;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+}
+
+/* How It Works */
+.how-it-works {
+    background: #fff;
+    padding: 30px;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Call to Action */
+.cta {
+    background: #007bff;
+    color: white;
+    padding: 40px;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+.cta .btn {
+    display: inline-block;
+    background: white;
+    color: #007bff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.cta .btn:hover {
+    background: #0056b3;
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .feature-list {
+        flex-direction: column;
+        align-items: center;
+    }
+}

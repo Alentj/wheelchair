@@ -1,4 +1,4 @@
-const ESP8266_IP = "http://192.168.1.100"; // Replace with your actual ESP8266 IP
+//const ESP8266_IP = "http://192.168.1.100"; // Replace with your actual ESP8266 IP
 
 // Function to send command to ESP8266
 /*function sendCommand(command) {
