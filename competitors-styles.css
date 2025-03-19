@@ -105,14 +105,14 @@ p {
 }
 .back-button {
     position: fixed; /* Keeps it in place while scrolling */
-    top: 8px;
-    left: 8px;
+    top: 15px;
+    left: 15px;
     padding: 10px 15px;
     font-size: 16px;
     color: rgb(8, 8, 8);
     background-color: #ffffff;
     border: none;
-    border-radius: 7px;
+    border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
 }

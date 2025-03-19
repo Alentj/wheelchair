@@ -52,5 +52,6 @@ document.getElementById('contact-form').addEventListener('submit', function (eve
         successMessage.style.display = "block";
         successMessage.style.color = "red";
     });
+
     
 });

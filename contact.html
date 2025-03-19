@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="contact-styles.css">
     <script type="module" src="contact.js"></script>
 </head>
 <body>
@@ -13,26 +13,31 @@
         <h1>Contact Us</h1>
         <p>Have questions? Reach out to us!</p>
     </header>
+    <button onclick="goBack()" class="back-button">⬅ Back</button>
 
     <div class="container">
-        <h1>Contact Us</h1>
-        <p>Have any questions or feedback? Reach out to us!</p>
         <form id="contact-form">
             <input type="text" id="name" placeholder="Your Name" required>
             <input type="email" id="email" placeholder="Your Email" required>
             <textarea id="message" placeholder="Your Message" required></textarea>
             <button type="submit">Send Message</button>
         </form>
-        <p id="success-message" style="display: none; color: green;"></p>
 
-
+        <!-- Success Message -->
+        <p id="success-message" style="display: none; color: green; font-weight: bold; text-align: center; margin-top: 10px;">
+            ✅ Your message has been sent successfully!
+        </p>
     </div>
 
-    <!-- Optional: Embed Google Maps -->
+    <!-- Google Maps Section -->
     <section class="map">
         <h2>Find Us</h2>
         <iframe src="https://maps.google.com/maps?q=Kerala&t=&z=13&ie=UTF8&iwloc=&output=embed" allowfullscreen></iframe>
     </section>
-
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 </html>

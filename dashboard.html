@@ -12,7 +12,8 @@
         <h2>Smart Wheelchair Dashboard</h2>
 
         <!-- Display Recognized Voice Command -->
-        <p id="recognized-text">Listening for voice commands...</p>
+        <p id="recognized-text"></p>
+
 
         <!-- Round Control Buttons -->
         <div class="control-container">
@@ -31,6 +32,11 @@
             <input type="range" id="speed-slider" min="0" max="100" value="50">
             <span id="speed-value">50%</span>
         </div>
+<!-- Battery Percentage Display -->
+<div class="battery-container">
+    <p>Battery: <span id="battery-percentage">--%</span></p>
+    <progress id="battery-bar" value="0" max="100"></progress>
+</div>
 
         <!-- Start Voice Recognition -->
         <button id="voice-btn">🎤 Start Voice Control</button>

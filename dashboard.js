@@ -1,104 +1,125 @@
 // Firebase Setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
-// Firebase Config
-const firebaseConfig = {
-    apiKey: "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU",
-    authDomain: "smart-wheel-chair-8574a.firebaseapp.com",
-    databaseURL: "https://smart-wheel-chair-8574a-default-rtdb.firebaseio.com",
-    projectId: "smart-wheel-chair-8574a",
-    storageBucket: "smart-wheel-chair-8574a.appspot.com",
-    messagingSenderId: "841133598939",
-    appId: "1:841133598939:web:18b3a941b19f7147aa84fe"
-};
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("✅ Document loaded, initializing Firebase...");
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU",
+        authDomain: "smart-wheel-chair-8574a.firebaseapp.com",
+        databaseURL: "https://smart-wheel-chair-8574a-default-rtdb.firebaseio.com",
+        projectId: "smart-wheel-chair-8574a",
+        storageBucket: "smart-wheel-chair-8574a.appspot.com",
+        messagingSenderId: "841133598939",
+        appId: "1:841133598939:web:18b3a941b19f7147aa84fe"
+    };
 
-// Global Variables
-let userId = null;
-let isListening = false; // Prevent duplicate recognition starts
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
 
-// ESP8266 IP Address (Replace with actual IP)
-const ESP8266_IP = "http://192.168.1.100";
+    // Global Variables
+    let userId = null;
 
-// Function to send command to ESP8266
-function sendCommand(command) {
-    fetch(`${ESP8266_IP}/control?cmd=${command}`, { mode: "no-cors" })
-        .then(() => console.log("✅ Command sent:", command))
-        .catch(error => console.error("❌ Error:", error));
-}
+    // **Authenticate User & Allow Control**
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            userId = user.uid;
+            const recognizedText = document.getElementById("recognized-text");
+            if (recognizedText) {
+                recognizedText.innerText = `✅ Logged in as: ${user.email}`;
+            } else {
+                console.warn("⚠️ Element 'recognized-text' not found.");
+            }
+            listenBatteryStatus(); // Start listening to battery updates
+        } else {
+            window.location.href = "login.html"; // Redirect if not authenticated
+        }
+    });
 
-// Speech Recognition Setup
-window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.continuous = true;
-recognition.lang = "en-US";
-
-// Authenticate User & Start Listening
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        userId = user.uid;
-        document.getElementById("recognized-text").innerText = `Logged in as: ${user.email}`;
-        startListening(); // Start voice recognition immediately
-    } else {
-        window.location.href = "login.html"; // Redirect if not authenticated
-    }
-});
-
-// Function to continuously listen for commands
-function startListening() {
-    if (isListening) return; // Prevent multiple instances
-    isListening = true;
-
-    try {
-        recognition.start();
-        console.log("🎤 Speech recognition started...");
-    } catch (error) {
-        console.error("❌ Speech recognition error:", error);
+    // **Function to send wheelchair command**
+    function sendCommand(command) {
+        if (!userId) {
+            console.log("❌ User not authenticated");
+            return;
+        }
+        set(ref(db, "wheelchair/command"), command)
+            .then(() => console.log(`✅ Command sent: ${command}`))
+            .catch(error => console.error("❌ Error:", error));
     }
 
+    // **Listen to Battery Updates from Firebase**
+    function listenBatteryStatus() {
+        const batteryRef = ref(db, "wheelchair/battery");
+        onValue(batteryRef, (snapshot) => {
+            const batteryLevel = snapshot.val();
+            const batteryText = `🔋 Battery: ${batteryLevel ? batteryLevel.toFixed(1) : "N/A"}%`;
+            
+            const batteryElement = document.getElementById("battery-status");
+            if (batteryElement) {
+                batteryElement.innerText = batteryText;
+            } else {
+                console.warn("⚠️ Element 'battery-status' not found.");
+            }
+        });
+    }
+
+    // **Speech Recognition Setup**
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.lang = "en-US";
+    recognition.start();
+
+    // **Handle Speech Recognition**
     recognition.onresult = function (event) {
         const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
-        console.log("🎤 Recognized:", command); // ✅ Log every recognized voice
+        console.log("🎤 Recognized:", command);
 
-        document.getElementById("recognized-text").innerText = `Recognized: "${command}"`;
+        const recognizedText = document.getElementById("recognized-text");
+        if (recognizedText) {
+            recognizedText.innerText = `🎤 Recognized: "${command}"`;
+        }
 
-        // Execute command
         if (command.includes("forward")) sendCommand("forward");
         else if (command.includes("backward")) sendCommand("backward");
         else if (command.includes("left")) sendCommand("left");
         else if (command.includes("right")) sendCommand("right");
         else if (command.includes("stop")) sendCommand("stop");
-
-        // Restart recognition only after command execution
-        setTimeout(() => {
-            isListening = false; // Allow restart
-            recognition.stop();
-        }, 1000);
     };
 
-    recognition.onend = () => {
-        console.log("🎤 Speech recognition stopped. Restarting...");
-        isListening = false; // Reset flag when recognition stops
-        startListening(); // Restart only after it stops
-    };
-}
+    // **Button Controls**
+    function setupButton(id, command) {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.addEventListener("click", () => sendCommand(command));
+        } else {
+            console.warn(`⚠️ Button '${id}' not found.`);
+        }
+    }
 
-// Add Event Listeners
-document.getElementById("speed-slider").addEventListener("input", function () {
-    document.getElementById("speed-value").innerText = this.value + "%";
-    sendCommand("speed-" + this.value);
-});
-document.getElementById("forward-btn").addEventListener("click", () => sendCommand("forward"));
-document.getElementById("backward-btn").addEventListener("click", () => sendCommand("backward"));
-document.getElementById("left-btn").addEventListener("click", () => sendCommand("left"));
-document.getElementById("right-btn").addEventListener("click", () => sendCommand("right"));
-document.getElementById("stop-btn").addEventListener("click", () => sendCommand("stop"));
-document.getElementById("logout-btn").addEventListener("click", () => {
-    window.location.href = "index.html";
+    setupButton("forward-btn", "forward");
+    setupButton("backward-btn", "backward");
+    setupButton("left-btn", "left");
+    setupButton("right-btn", "right");
+    setupButton("stop-btn", "stop");
+
+    // **Logout Button**
+    const logoutBtn = document.getElementById("logout-btn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            signOut(auth).then(() => {
+                console.log("✅ Logged out");
+                window.location.href = "index.html";
+            }).catch((error) => {
+                console.error("❌ Logout failed:", error);
+            });
+        });
+    } else {
+        console.warn("⚠️ Logout button not found.");
+    }
 });

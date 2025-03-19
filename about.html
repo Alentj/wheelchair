@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="about-styles.css">
 </head>
 <body>
-
+    <button onclick="goBack()" class="back-button">⬅ Back</button>
     <header>
         <h1>About Our Smart Wheelchair</h1>
     </header>
@@ -55,6 +55,10 @@
         <p>Contact us for more details on how the Smart Wheelchair is transforming lives.</p>
         <a href="contact.html" class="btn">Contact Us</a>
     </section>
-
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,162 @@
+#include <ESP8266WiFi.h>
+#include <FirebaseESP8266.h>
+
+// **WiFi Credentials**
+#define WIFI_SSID "Project_1" // change wifi Credentials
+#define WIFI_PASSWORD "123456789"
+
+// **Firebase Credentials**
+#define FIREBASE_HOST "https://smart-wheel-chair-8574a-default-rtdb.firebaseio.com/"
+#define FIREBASE_API_KEY "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU"
+#define FIREBASE_USER_EMAIL "mail2alentj@gmail.com"  
+#define FIREBASE_USER_PASSWORD "223721"
+
+// **Motor Driver Pins (L298N)**
+#define IN1 D5
+#define IN2 D6
+#define IN3 D7
+#define IN4 D8
+
+// **Ultrasonic Sensor Pins**
+#define TRIG_PIN D1
+#define ECHO_PIN D2
+
+// **Obstacle Distance Thresholds (in cm)**
+#define STOP_DISTANCE 10   // Stop if obstacle is closer than 10 cm
+#define SLOW_DISTANCE 20   // Slow down if obstacle is between 10-20 cm
+
+// **Define Firebase objects**
+FirebaseConfig config;
+FirebaseAuth auth;
+FirebaseData fbdo;
+
+void setup() {
+    Serial.begin(115200);
+
+    // **Setup Motor Pins**
+    pinMode(IN1, OUTPUT);
+    pinMode(IN2, OUTPUT);
+    pinMode(IN3, OUTPUT);
+    pinMode(IN4, OUTPUT);
+
+    // **Setup Ultrasonic Sensor Pins**
+    pinMode(TRIG_PIN, OUTPUT);
+    pinMode(ECHO_PIN, INPUT);
+
+    // **Connect to WiFi**
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    Serial.print("Connecting to WiFi");
+    while (WiFi.status() != WL_CONNECTED) {
+        Serial.print(".");
+        delay(500);
+    }
+    Serial.println("\n✅ WiFi Connected!");
+
+    // **Initialize Firebase**
+    config.database_url = FIREBASE_HOST;
+    config.api_key = FIREBASE_API_KEY;
+    
+    auth.user.email = FIREBASE_USER_EMAIL;
+    auth.user.password = FIREBASE_USER_PASSWORD;
+
+    Firebase.begin(&config, &auth);
+    Firebase.reconnectWiFi(true);
+    Serial.println("✅ Firebase Initialized!");
+}
+
+void loop() {
+    int distance = getDistance();  // Get obstacle distance
+    Serial.print("🔍 Distance: ");
+    Serial.print(distance);
+    Serial.println(" cm");
+
+    // **Check if Obstacle is Too Close**
+    if (distance <= STOP_DISTANCE) {
+        stopMotors();  // Stop if obstacle is too close
+        Serial.println("🛑 Stopping due to obstacle!");
+        return;  // Exit loop early to prevent Firebase command execution
+    } 
+    else if (distance <= SLOW_DISTANCE) {
+        slowDownMotors();  // Slow down if obstacle is near
+        Serial.println("🐢 Slowing down due to obstacle!");
+    } 
+    else {
+        // **Read Firebase for Commands**
+        if (Firebase.getString(fbdo, "/wheelchair/command")) {
+            String command = fbdo.stringData();
+            Serial.println("📡 Received Command: " + command);
+
+            // **Move the wheelchair based on the command**
+            if (command == "forward") moveForward();
+            else if (command == "backward") moveBackward();
+            else if (command == "left") turnLeft();
+            else if (command == "right") turnRight();
+            else if (command == "stop") stopMotors();
+        } else {
+            Serial.println("❌ Firebase Read Error: " + fbdo.errorReason());
+        }
+    }
+    delay(500);  // Check Firebase and sensors frequently
+}
+
+// **Function to Measure Distance from Ultrasonic Sensor**
+int getDistance() {
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    
+    long duration = pulseIn(ECHO_PIN, HIGH);
+    int distance = duration * 0.034 / 2;  // Convert to cm
+    return distance;
+}
+
+// **Motor Control Functions**
+void moveForward() {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+    Serial.println("🚀 Moving Forward");
+}
+
+void moveBackward() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+    Serial.println("⬅️ Moving Backward");
+}
+
+void turnLeft() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, HIGH);
+    digitalWrite(IN3, HIGH);
+    digitalWrite(IN4, LOW);
+    Serial.println("↩️ Turning Left");
+}
+
+void turnRight() {
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
+    Serial.println("↪️ Turning Right");
+}
+
+void stopMotors() {
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
+    Serial.println("🛑 Stopping");
+}
+
+void slowDownMotors() {
+    analogWrite(IN1, 150);  // Reduce speed (150 out of 255)
+    analogWrite(IN2, 0);
+    analogWrite(IN3, 150);
+    analogWrite(IN4, 0);
+    Serial.println("🐢 Slowing Down");
+}
