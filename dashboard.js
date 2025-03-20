@@ -48,7 +48,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         set(ref(db, "wheelchair/command"), command)
-            .then(() => console.log(`✅ Command sent: ${command}`))
+            .then(() => {
+                console.log(`✅ Command sent: ${command}`);
+                
+                // Speak the command response (with faster voice)
+                const utterance = new SpeechSynthesisUtterance("Command received: " + command);
+                utterance.rate = 1.5;  // Increase this value to make speech faster
+                utterance.pitch = 1.0; // Normal pitch
+                utterance.volume = 1.0; // Maximum volume
+                window.speechSynthesis.speak(utterance);
+            })
             .catch(error => console.error("❌ Error:", error));
     }
 
@@ -73,7 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.lang = "en-US";
-    recognition.start();
+    recognition.interimResults = false;  // Set to false to only process final results
+
+    recognition.start();  // Start recognition immediately on page load
 
     // **Handle Speech Recognition**
     recognition.onresult = function (event) {
@@ -85,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
             recognizedText.innerText = `🎤 Recognized: "${command}"`;
         }
 
+        // Check for command in recognized speech
         if (command.includes("forward")) sendCommand("forward");
         else if (command.includes("backward")) sendCommand("backward");
         else if (command.includes("left")) sendCommand("left");
@@ -92,16 +104,30 @@ document.addEventListener("DOMContentLoaded", function () {
         else if (command.includes("stop")) sendCommand("stop");
     };
 
-    // **Button Controls**
+    // **Listen for errors in speech recognition**
+    recognition.onerror = function (event) {
+        console.error("❌ Speech Recognition Error:", event.error);
+    };
+
+    // **Listen for end of speech recognition session**
+    recognition.onend = function () {
+        console.log("🎤 Speech recognition ended. Restarting...");
+        recognition.start();  // Automatically restart speech recognition
+    };
+
+    // **Button Controls for Physical Button Commands**
     function setupButton(id, command) {
         const btn = document.getElementById(id);
         if (btn) {
-            btn.addEventListener("click", () => sendCommand(command));
+            btn.addEventListener("click", () => {
+                sendCommand(command);  // Send command to Firebase when button is clicked
+            });
         } else {
             console.warn(`⚠️ Button '${id}' not found.`);
         }
     }
 
+    // Setup the buttons for manual control
     setupButton("forward-btn", "forward");
     setupButton("backward-btn", "backward");
     setupButton("left-btn", "left");
