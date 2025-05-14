@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU",
+    apiKey: "*****************************",
     authDomain: "smart-wheel-chair-8574a.firebaseapp.com",
     projectId: "smart-wheel-chair-8574a",
     storageBucket: "smart-wheel-chair-8574a.appspot.com",
