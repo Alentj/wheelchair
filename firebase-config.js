@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU",
+  apiKey: "AIzaS*********************",
   authDomain: "smart-wheel-chair-8574a.firebaseapp.com",
   projectId: "smart-wheel-chair-8574a",
   storageBucket: "smart-wheel-chair-8574a.firebasestorage.app",
