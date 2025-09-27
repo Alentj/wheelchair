@@ -3,7 +3,18 @@
 >SPECIALIST FOR PARALYSED PEOPLE
 
 
-<h4>Made with help of firebase,wifi module,etc
+<h4>Made with help of <br>
+  Google Firebase<br>
+  Wifi module<br>
+  Motor driver<br>
+  Motor * 4 (with tire)<br>
+  Rechargeable batterry module<br>
+  Battry<br>
+  Ardinuo<br>
+  Jumper cables<br>
+  Soldering iron<br>
+  etc<br>
+  
 <h2>All the codes are mentioned above
 </h2>
 
