@@ -8,6 +8,7 @@
 </h2>
 
 <h1>https://alentj.github.io/wheelchair/</h1>
+<h4>website is not complete and you can use the codes .i stopped building it as i had lack of time</h4>
 
 > Please dont misuse the images from the repo <br>
 
