@@ -6,15 +6,17 @@ import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/fi
 document.addEventListener("DOMContentLoaded", function () {
     console.log("✅ Document loaded, initializing Firebase...");
 
-    // Firebase Config
+    // Firebase Config   (CONFIG YOUR FIRE BASE  HERE >>>>>>>)
+
+    
     const firebaseConfig = {
-        apiKey: "AIzaSyByByuUdrz46s5OHy09Vc3q3bEfz9HAdYU",
+        apiKey: "   ",
         authDomain: "smart-wheel-chair-8574a.firebaseapp.com",
-        databaseURL: "https://smart-wheel-chair-8574a-default-rtdb.firebaseio.com",
-        projectId: "smart-wheel-chair-8574a",
-        storageBucket: "smart-wheel-chair-8574a.appspot.com",
-        messagingSenderId: "841133598939",
-        appId: "1:841133598939:web:18b3a941b19f7147aa84fe"
+        databaseURL: "  ",
+        projectId: " ",
+        storageBucket: " ",
+        messagingSenderId: "",
+        appId: "   "
     };
 
     // Initialize Firebase
@@ -61,7 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => console.error("❌ Error:", error));
     }
 
-    // **Listen to Battery Updates from Firebase**
+    // **Listen to Battery Updates from Firebase**  
+    // WORK AYITT ELLA BUT LOOKING FORWARD TO CORRECT IT //
     function listenBatteryStatus() {
         const batteryRef = ref(db, "wheelchair/battery");
         onValue(batteryRef, (snapshot) => {
@@ -128,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Setup the buttons for manual control
+    // MANAUL CONTROLL
     setupButton("forward-btn", "forward");
     setupButton("backward-btn", "backward");
     setupButton("left-btn", "left");
@@ -149,3 +153,4 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("⚠️ Logout button not found.");
     }
 });
+
